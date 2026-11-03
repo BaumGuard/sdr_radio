@@ -1,4 +1,5 @@
 LDFLAGS=-lm -lrtlsdr -lasound
+CCFLAGS=-Wall
 
 fm_radio: src/main.c
-	gcc main.c -o fm_radio $(LDFLAGS)
+	gcc src/main.c -o fm_radio $(LDFLAGS) $(CCFLAGS)
