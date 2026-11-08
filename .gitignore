@@ -1,1 +1,3 @@
+build/*
 fm_radio
+*.wav
