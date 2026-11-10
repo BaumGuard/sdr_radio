@@ -75,27 +75,28 @@ The program receives a stream of IQ sample packets delivered by the SDR and proc
 
 ### FM
 1. **Demodulation**
-    Demodulate the signal by calculating the phase of every IQ sample pair
+    Demodulate the signal by calculating the phase of every IQ sample pair<br>
     $$\phi_0 = atan2(q, i)$$
     
-    Calculate the phase difference to the previous phase
+    Calculate the phase difference to the previous phase<br>
     $$\Delta \phi = \phi_0 - \phi_{-1}$$
     
-    If the phase difference is not between $-\pi$ and $\pi$
-    $$\Delta \phi = \begin{cases} -\pi \le \Delta \phi \le \pi, & \Delta \phi \\\Delta \phi < -\pi, & \Delta \phi + \pi \\ \Delta \phi > \pi, & \Delta \phi - \pi \end{cases}$$
+    If the phase difference is not between $-\pi$ and $\pi$:
+     - $\Delta \phi < -\pi \rightarrow \Delta \phi + 2\pi$
+     - $\Delta \phi > \pi \rightarrow \Delta \phi - 2\pi$
     
-2. **Low pass filtering**
+3. **Low pass filtering**
     The low pass filter is implemented as a second degree IIR Butterworth filter with a cutoff frequency of 17 kHz. The filter lets the audio channel pass through and cancels out the higher frequencies to prevent aliasing.
     
-3. **Downsampling**
+4. **Downsampling**
     Since the SDR samples the signal at a frequency of 240000 Hz (at least in case of an RTL-SDR), but audio normally has a sampling frequency of only 48000 Hz, it is necessary to downsample the signal to output it over the speakers. This is done by basically using only every fifth sample, since 240000 Hz divided by 48000 Hz is 5, and discarding the remaining samples.
 
-4. **Audio output**
+5. **Audio output**
     `sdr_radio` uses Linux's standard audio server *ALSA* to output the processed audio data through the speakers. After having collected 1024 samples, the samples are sent to the *ALSA* interface in order to output them.
     
 ### AM
 1. **Demodulation**
-    Demodulate the signal by calculating the magnitude of every IQ sample pair and normalizing it to a range of -1 to 1.
+    Demodulate the signal by calculating the magnitude of every IQ sample pair and normalizing it to a range of -1 to 1.<br>
     $$mag = \frac{\sqrt{i^2 + q^2}}{\sqrt{2}}$$
     
 2. **Low pass filtering**
