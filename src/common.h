@@ -6,7 +6,7 @@
 #include <libairspyhf/airspyhf.h>
 #include <alsa/asoundlib.h>
 
-#include "wavwriter/wavwriter.h"
+#include "wavwriter.h"
 
 #define SQRT_2  1.414213562
 #define STR_EQUAL( str1, str2 )     strcmp( str1, str2 ) == 0
@@ -60,14 +60,14 @@ enum SDRs {
 
 // BUFFERS
 extern double
-    recv_i_buf[NUM_INPUT_BUFFERS][INPUT_BUFFER_SIZE],
-    recv_q_buf[NUM_INPUT_BUFFERS][INPUT_BUFFER_SIZE];
+    rtlsdr_recv_i_buf[NUM_INPUT_BUFFERS][INPUT_BUFFER_SIZE],
+    rtlsdr_recv_q_buf[NUM_INPUT_BUFFERS][INPUT_BUFFER_SIZE];
 
 extern double
     airspyhf_recv_i_buf[NUM_INPUT_BUFFERS][AIRSPYHF_INPUT_BUFFER_SIZE],
     airspyhf_recv_q_buf[NUM_INPUT_BUFFERS][AIRSPYHF_INPUT_BUFFER_SIZE];
 
-extern double buffer[INPUT_BUFFER_SIZE];
+extern double dsp_buffer[INPUT_BUFFER_SIZE];
 
 extern uint32_t recv_buf_idx;
 

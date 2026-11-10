@@ -1,9 +1,31 @@
-#ifndef AIRSPYHF_H
-#define AIRSPYHF_H
+#ifndef SDR_H
+#define SDR_H
 
-#include <libairspyhf/airspyhf.h>
-#include <stdint.h>
 #include <pthread.h>
+#include <stdint.h>
+
+/*
+Initialize an RTL-SDR device
+This does not start the reception, it just configures parameters
+like the SDR, the receiving frequency, the sample rate and the gain
+
+Args:
+ - sdr_index    : SDR index (can be obtained using rtl_test and should
+                  normally be 0 if no other RTL-SDR is connected)
+ - freq         : Receiving frequency in Hz
+ - sample_rate  : Sampling frequency (normally 240000 Hz)
+ - gain         : Receiver gain in tenths of decibels (normally 450)
+                  The possible gains can be obtained with the function
+                  rtlsdr_get_tuner_gains() in /usr/include/rtl-sdr.h
+
+Returns:
+ -  0    : Success
+ - -1    : Error
+*/
+int init_rtlsdr( uint32_t sdr_index, uint32_t freq, uint32_t sample_rate, int gain );
+
+
+
 
 // Conditional variable to terminate the reception in
 // the function stop_processing()
@@ -37,21 +59,5 @@ Returns (Defined in /usr/include/libairspyhf/airspyhf.h):
  - -2 (AIRSPYHF_UNSUPPORTED)
 */
 int init_airspyhf( uint32_t freq, uint32_t sample_rate, int gain );
-
-
-
-/*
-Callback function to process a buffer of samples
-Performs demodulation, filtering and output of a sample chunk
-
-Args:
- - transfer_fn  : Pointer to the buffer of samples, length of the buffer
-                  and further additional information
-                  (Defined in /usr/include/libairspyhf/airspyhf.h)
-
-Returns:
- - 0    : Success
-*/
-int airspyhf_on_samples_received( airspyhf_transfer_t* transfer_fn );
 
 #endif

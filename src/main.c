@@ -1,7 +1,7 @@
-#include "rtlsdr.h"
-#include "airspyhf.h"
+#include "sdr.h"
+#include "dsp.h"
 #include "audio.h"
-#include "wavwriter/wavwriter.h"
+#include "wavwriter.h"
 #include "utils.h"
 #include "common.h"
 #include "colorprint.h"
@@ -13,28 +13,7 @@
 #include <pthread.h>
 
 
-void stop_processing( int sig ) {
-    printf( "[INFO] Stop signal received - Stopping the reception\n" );
 
-    if( record_audio )
-        wavwriter_close( wavfile );
-
-    switch( sdr_type ) {
-        case RTLSDR:
-            rtlsdr_cancel_async( rtlsdr );
-            //rtlsdr_close( rtlsdr );
-            break;
-
-        case AIRSPYHF:
-            airspyhf_stop( airspyhf );
-            airspyhf_close( airspyhf );
-            pthread_cond_signal( &airspyhf_running );
-            break;
-    }
-
-    snd_pcm_close( playback_handle );
-    wavwriter_close( filter_wav_file );
-}
 
 /*
 void read_iq_file( char* filename, void (*sample_cb)(unsigned char*, uint32_t, void*) ) {

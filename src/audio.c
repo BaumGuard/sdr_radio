@@ -1,7 +1,7 @@
 #include "audio.h"
 
 #include "common.h"
-#include "wavwriter/wavwriter.h"
+#include "wavwriter.h"
 
 #include <alsa/asoundlib.h>
 
