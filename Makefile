@@ -4,7 +4,7 @@ CCFLAGS=-Wall
 SRC=src
 BUILD=build
 
-all: fm_radio
+all: sdr_radio
 
 $(BUILD)/sdr.o: $(SRC)/sdr.h $(SRC)/sdr.c
 	gcc -c $(SRC)/sdr.c -o $(BUILD)/sdr.o $(CCFLAGS)
@@ -34,9 +34,9 @@ $(BUILD)/wavwriter.o: src/wavwriter.h src/wavwriter.c
 	gcc -c $(SRC)/wavwriter.c -o $(BUILD)/wavwriter.o
 
 
-fm_radio: $(BUILD)/sdr.o $(BUILD)/dsp.o $(BUILD)/audio.o $(BUILD)/common.o $(BUILD)/demod.o $(BUILD)/filters.o $(BUILD)/utils.o $(BUILD)/wavwriter.o $(BUILD)/main.o
-	gcc $(BUILD)/*.o -o fm_radio $(LDFLAGS) $(CCFLAGS)
+sdr_radio: $(BUILD)/sdr.o $(BUILD)/dsp.o $(BUILD)/audio.o $(BUILD)/common.o $(BUILD)/demod.o $(BUILD)/filters.o $(BUILD)/utils.o $(BUILD)/wavwriter.o $(BUILD)/main.o
+	gcc $(BUILD)/*.o -o sdr_radio $(LDFLAGS) $(CCFLAGS)
 
 
 clean:
-	rm -f $(BUILD)/*.o fm_radio
+	rm -f $(BUILD)/*.o sdr_radio
