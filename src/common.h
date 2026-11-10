@@ -8,6 +8,9 @@
 
 #include "wavwriter.h"
 
+#define true 1
+#define false 0
+
 #define SQRT_2  1.414213562
 #define STR_EQUAL( str1, str2 )     strcmp( str1, str2 ) == 0
 
