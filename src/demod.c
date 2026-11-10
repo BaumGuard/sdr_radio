@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+
 void fm_demod( double* i_buf, double* q_buf, double* demod_buf, int buf_size ) {
     static double
         prev_phase = 0.0, current_phase = 0.0, phase_diff = 0.0;
@@ -25,6 +26,7 @@ void fm_demod( double* i_buf, double* q_buf, double* demod_buf, int buf_size ) {
         demod_buf[i] = phase_diff;
     }
 }
+
 
 void am_demod( double* i_buf, double* q_buf, double* demod_buf, int buf_size ) {
     for( int i = 0; i < buf_size; i++ ) {

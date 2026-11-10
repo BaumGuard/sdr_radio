@@ -6,7 +6,9 @@
 #include <alsa/asoundlib.h>
 
 
-void init_alsa_audio_output( char* interface, uint32_t sample_rate, int channels, int sample_type ) {
+void init_alsa_audio_output(
+    char* interface, uint32_t sample_rate, int channels, int sample_type
+) {
     snd_pcm_hw_params_t* hw_params;
 
     snd_pcm_open( &playback_handle, interface, SND_PCM_STREAM_PLAYBACK, 0 );

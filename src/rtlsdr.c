@@ -4,39 +4,47 @@
 #include "filters.h"
 #include "audio.h"
 #include "common.h"
+#include "colorprint.h"
 
 #include <rtl-sdr.h>
-#include <stdio.h>
 
 
 
-int init_rtlsdr( uint32_t sdr_index, uint32_t sample_rate, int gain ) {
+int init_rtlsdr( uint32_t sdr_index, uint32_t freq, uint32_t sample_rate, int gain ) {
+    wavwriter_open( &filter_wav_file, "filter.wav", 1, 240000, F64 );
     int status = rtlsdr_open( &rtlsdr, sdr_index );
     if( status < 0 ) {
-        fprintf( stderr, "[ERROR] No SDR found\n" );
+        color_fprintln( stderr, COLOR_RED, "[ERROR] No SDR found" );
         return -1;
     }
 
     status = rtlsdr_set_sample_rate( rtlsdr, sample_rate );
     if( status ) {
-        fprintf( stderr, "[ERROR] Could not set sample rate\n" );
+        color_fprintln( stderr, COLOR_RED, "[ERROR] Could not set sample rate" );
         return -1;
     }
 
     status = rtlsdr_set_tuner_gain( rtlsdr, gain );
     if ( status ) {
-        fprintf( stderr, "[ERROR] Gain could not be set\n" );
+        color_fprintln( stderr, COLOR_RED, "[ERROR] Gain could not be set" );
         return -1;
     }
 
     status = rtlsdr_reset_buffer( rtlsdr );
     if( status ) {
-        fprintf( stderr, "[ERROR] Resetting buffer\n" );
+        color_fprintln( stderr, COLOR_RED, "[ERROR] Resetting buffer" );
+        return -1;
+    }
+
+    status = rtlsdr_set_center_freq( rtlsdr, freq );
+    if( status ) {
+        color_fprintln( stderr, COLOR_RED, "[ERROR] Invalid frequency %d Hz", freq );
         return -1;
     }
 
     return 0;
 }
+
 
 
 void rtlsdr_on_samples_received( unsigned char* buf, uint32_t len, void* ctx ) {
@@ -53,15 +61,29 @@ void rtlsdr_on_samples_received( unsigned char* buf, uint32_t len, void* ctx ) {
 
     switch( modulation ) {
         case FM:
-            fm_demod( recv_i_buf[current_buf], recv_q_buf[current_buf], buffer, INPUT_BUFFER_SIZE );
+            fm_demod(
+                recv_i_buf[current_buf],
+                recv_q_buf[current_buf],
+                buffer,
+                INPUT_BUFFER_SIZE
+            );
+
             lpf_17kHz( buffer, INPUT_BUFFER_SIZE );
+            //bpf( buffer, INPUT_BUFFER_SIZE );
             break;
 
         case AM:
-            am_demod( recv_i_buf[current_buf], recv_q_buf[current_buf], buffer, INPUT_BUFFER_SIZE );
+            am_demod(
+                recv_i_buf[current_buf],
+                recv_q_buf[current_buf],
+                buffer,
+                INPUT_BUFFER_SIZE
+            );
+
             lpf_5kHz( buffer, INPUT_BUFFER_SIZE );
             break;
     }
 
+    wavwriter_write_samples( filter_wav_file, buffer, INPUT_BUFFER_SIZE );
     output_audio_chunk( buffer, INPUT_BUFFER_SIZE, 1.0 );
 }

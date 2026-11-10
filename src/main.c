@@ -1,16 +1,16 @@
-#include <rtl-sdr.h>
-#include <libairspyhf/airspyhf.h>
-#include <stdio.h>
-
-#include <signal.h>
-#include <pthread.h>
-
 #include "rtlsdr.h"
 #include "airspyhf.h"
 #include "audio.h"
 #include "wavwriter/wavwriter.h"
 #include "utils.h"
 #include "common.h"
+#include "colorprint.h"
+
+#include <rtl-sdr.h>
+#include <libairspyhf/airspyhf.h>
+#include <stdio.h>
+#include <signal.h>
+#include <pthread.h>
 
 
 void stop_processing( int sig ) {
@@ -22,7 +22,7 @@ void stop_processing( int sig ) {
     switch( sdr_type ) {
         case RTLSDR:
             rtlsdr_cancel_async( rtlsdr );
-            rtlsdr_close( rtlsdr );
+            //rtlsdr_close( rtlsdr );
             break;
 
         case AIRSPYHF:
@@ -33,6 +33,7 @@ void stop_processing( int sig ) {
     }
 
     snd_pcm_close( playback_handle );
+    wavwriter_close( filter_wav_file );
 }
 
 /*
@@ -77,13 +78,36 @@ int main( int argc, char* argv[] ) {
     init_alsa_audio_output( "pulse", AUDIO_SAMPLE_RATE, 1, SND_PCM_FORMAT_S16_LE );
 
 
+    printf( "[INFO] Searching for RTL-SDR device... " );
+    if( rtlsdr_get_device_count() > 0 ) {
+        color_println( COLOR_GREEN, "Found" );
+        sdr_type = RTLSDR;
+        goto start_reception;
+    }
+    else {
+        color_println( COLOR_RED, "Not found" );
+        goto search_airspyhf;
+    }
 
+search_airspyhf:
+    printf( "[INFO] Searching for AirspyHF device... " );
+    uint64_t airspyhf_device = 0;
+    airspyhf_list_devices( &airspyhf_device, 1 );
+    if( airspyhf_device != 0 ) {
+        color_println( COLOR_GREEN, "Found" );
+        sdr_type = AIRSPYHF;
+    }
+    else {
+        color_println( COLOR_RED, "Not found" );
+        return -1;
+    }
+
+start_reception:
     switch( sdr_type ) {
         case RTLSDR:
-            if( init_rtlsdr(SDR_INDEX, SDR_SAMPLE_RATE, SDR_GAIN) ) {
+            if( init_rtlsdr(SDR_INDEX, radio_freq, SDR_SAMPLE_RATE, SDR_GAIN) ) {
                 return -1;
             }
-            rtlsdr_set_center_freq( rtlsdr, radio_freq );
 
             printf( "[INFO] Opening RTL-SDR\n" );
             if( radio_freq <= 30000000 )
@@ -111,6 +135,12 @@ int main( int argc, char* argv[] ) {
 
             while( pthread_cond_wait(&airspyhf_running, &airspyhf_mutex) );
             pthread_mutex_unlock( &airspyhf_mutex );
+            break;
+
+        default:
+            color_println( COLOR_RED, "Not found" );
+            color_fprintln( stderr, COLOR_RED, "[ERROR] No SDR device found" );
+            break;
     }
 
     return 0;

@@ -5,7 +5,7 @@
 #include "audio.h"
 #include "common.h"
 
-#include <stdio.h>
+#include "colorprint.h"
 
 
 pthread_mutex_t airspyhf_mutex;
@@ -23,28 +23,34 @@ int init_airspyhf( uint32_t freq, uint32_t sample_rate, int gain ) {
 
     switch( status ) {
         case AIRSPYHF_ERROR:
-            fprintf( stderr, "[ERROR] No SDR connected\n" );
+            color_fprintln( stderr, COLOR_RED, "[ERROR] No SDR connected" );
             return status;
 
         case AIRSPYHF_UNSUPPORTED:
-            fprintf( stderr, "[ERROR] SDR not supported\n" );
+            color_fprintln( stderr, COLOR_RED, "[ERROR] SDR not supported" );
             return status;
     }
 
     status = airspyhf_set_hf_agc( airspyhf, gain );
     if( status ) {
-        fprintf( stderr, "[ERROR] AirspyHF: Failed to enable AGC\n" );
+        color_fprintln( stderr, COLOR_RED, "[ERROR] AirspyHF: Failed to enable AGC" );
         return status;
     }
 
     status = airspyhf_set_samplerate( airspyhf, sample_rate );
     if( status ) {
-        fprintf( stderr, "[ERROR] AirspyHF: Invalid sample rate %d Hz\n", sample_rate );
+        color_fprintln(
+            stderr, COLOR_RED,
+            "[ERROR] AirspyHF: Invalid sample rate %d Hz", sample_rate
+        );
     }
 
     status = airspyhf_set_freq( airspyhf, freq );
     if( status ) {
-        fprintf( stderr, "[ERROR] Airspy: Invalid frequency %d Hz\n", freq );
+        color_fprintln(
+            stderr, COLOR_RED,
+            "[ERROR] Airspy: Invalid frequency %d Hz", freq
+        );
     }
 
     // airspyhf_set_lib_dsp( airspyhf, 1 );
@@ -64,13 +70,25 @@ int airspyhf_on_samples_received( airspyhf_transfer_t* transfer_fn ) {
 
     switch( modulation ) {
         case FM:
-            fm_demod( airspyhf_recv_i_buf[current_buf], airspyhf_recv_q_buf[current_buf], buffer, AIRSPYHF_INPUT_BUFFER_SIZE );
+            fm_demod(
+                airspyhf_recv_i_buf[current_buf],
+                airspyhf_recv_q_buf[current_buf],
+                buffer,
+                AIRSPYHF_INPUT_BUFFER_SIZE
+            );
+
             lpf_17kHz( buffer, AIRSPYHF_INPUT_BUFFER_SIZE );
             output_audio_chunk( buffer, AIRSPYHF_INPUT_BUFFER_SIZE, 1.0 );
             break;
 
         case AM:
-            am_demod( airspyhf_recv_i_buf[current_buf], airspyhf_recv_q_buf[current_buf], buffer, AIRSPYHF_INPUT_BUFFER_SIZE );
+            am_demod(
+                airspyhf_recv_i_buf[current_buf],
+                airspyhf_recv_q_buf[current_buf],
+                buffer,
+                AIRSPYHF_INPUT_BUFFER_SIZE
+            );
+
             lpf_5kHz( buffer, AIRSPYHF_INPUT_BUFFER_SIZE );
             output_audio_chunk( buffer, AIRSPYHF_INPUT_BUFFER_SIZE, 128.0 );
             break;

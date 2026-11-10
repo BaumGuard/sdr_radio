@@ -31,11 +31,11 @@
 #define NUM_INPUT_BUFFERS 8
 #define INPUT_BUFFER_SIZE 131072
 #define AIRSPYHF_INPUT_BUFFER_SIZE 2048
-#define AUDIO_BUFFER_SIZE 2048
+#define AUDIO_BUFFER_SIZE 1024
 
 
 
-
+// SETTINGS
 extern uint32_t radio_freq;
 extern bool record_audio;
 extern char audio_filepath[256];
@@ -51,6 +51,7 @@ enum Modulations {
 };
 
 enum SDRs {
+    NOSDR,
     RTLSDR,
     AIRSPYHF
 };
@@ -58,7 +59,6 @@ enum SDRs {
 
 
 // BUFFERS
-
 extern double
     recv_i_buf[NUM_INPUT_BUFFERS][INPUT_BUFFER_SIZE],
     recv_q_buf[NUM_INPUT_BUFFERS][INPUT_BUFFER_SIZE];
@@ -71,6 +71,7 @@ extern double buffer[INPUT_BUFFER_SIZE];
 
 extern uint32_t recv_buf_idx;
 
+
 // SDR
 extern rtlsdr_dev_t* rtlsdr;
 extern airspyhf_device_t* airspyhf;
@@ -80,5 +81,9 @@ extern snd_pcm_t* playback_handle;
 extern wav_file_t* wavfile;
 extern FILE* audio_file;
 
+
+
+
+extern wav_file_t* filter_wav_file;
 
 #endif
