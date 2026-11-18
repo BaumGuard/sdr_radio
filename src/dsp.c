@@ -29,10 +29,10 @@ void rtlsdr_on_samples_received( unsigned char* buf, uint32_t len, void* ctx ) {
                 rtlsdr_recv_i_buf[current_buf],
                 rtlsdr_recv_q_buf[current_buf],
                 dsp_buffer,
-                INPUT_BUFFER_SIZE
+                RTLSDR_INPUT_BUFFER_SIZE
             );
 
-            lpf_17kHz( dsp_buffer, dsp_buffer, INPUT_BUFFER_SIZE );
+            filter_forward( dsp_buffer, dsp_buffer, RTLSDR_INPUT_BUFFER_SIZE, a, b );
             break;
 
         case AM:
@@ -40,15 +40,15 @@ void rtlsdr_on_samples_received( unsigned char* buf, uint32_t len, void* ctx ) {
                 rtlsdr_recv_i_buf[current_buf],
                 rtlsdr_recv_q_buf[current_buf],
                 dsp_buffer,
-                INPUT_BUFFER_SIZE
+                RTLSDR_INPUT_BUFFER_SIZE
             );
 
-            lpf_5kHz( dsp_buffer, INPUT_BUFFER_SIZE );
+            filter_forward( dsp_buffer, dsp_buffer, RTLSDR_INPUT_BUFFER_SIZE, a, b );
             break;
     }
 
-    //wavwriter_write_samples( filter_wav_file, diff_band_buf, INPUT_BUFFER_SIZE );
-    output_audio_chunk( dsp_buffer, INPUT_BUFFER_SIZE, 1.0 );
+    //wavwriter_write_samples( filter_wav_file, diff_band_buf, RTLSDR_INPUT_BUFFER_SIZE );
+    output_audio_chunk( dsp_buffer, RTLSDR_INPUT_BUFFER_SIZE, 1.0 );
 }
 
 
@@ -69,7 +69,7 @@ int airspyhf_on_samples_received( airspyhf_transfer_t* transfer_fn ) {
                 AIRSPYHF_INPUT_BUFFER_SIZE
             );
 
-            lpf_17kHz( dsp_buffer, dsp_buffer, AIRSPYHF_INPUT_BUFFER_SIZE );
+            filter_forward( dsp_buffer, dsp_buffer, AIRSPYHF_INPUT_BUFFER_SIZE, a, b );
             output_audio_chunk( dsp_buffer, AIRSPYHF_INPUT_BUFFER_SIZE, 1.0 );
             break;
 
@@ -81,7 +81,7 @@ int airspyhf_on_samples_received( airspyhf_transfer_t* transfer_fn ) {
                 AIRSPYHF_INPUT_BUFFER_SIZE
             );
 
-            lpf_5kHz( dsp_buffer, AIRSPYHF_INPUT_BUFFER_SIZE );
+            filter_forward( dsp_buffer, dsp_buffer, AIRSPYHF_INPUT_BUFFER_SIZE, a, b );
             output_audio_chunk( dsp_buffer, AIRSPYHF_INPUT_BUFFER_SIZE, 128.0 );
             break;
     }

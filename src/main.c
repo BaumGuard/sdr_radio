@@ -1,5 +1,6 @@
 #include "sdr.h"
 #include "dsp.h"
+#include "filters.h"
 #include "audio.h"
 #include "wavwriter.h"
 #include "utils.h"
@@ -89,10 +90,15 @@ start_reception:
             }
 
             printf( "[INFO] Opening RTL-SDR\n" );
-            if( radio_freq <= 30000000 )
+            if( radio_freq <= 30000000 ) {
+                butterworth_iir_coefficients( 5000.0, (double)SDR_SAMPLE_RATE, a, b );
                 printf( "[INFO] Receiving on %d MHz\n", radio_freq / 1000 );
-            else
+            }
+
+            else {
+                butterworth_iir_coefficients( 16000.0, (double)SDR_SAMPLE_RATE, a, b );
                 printf( "[INFO] Receiving on %.3f MHz\n", (double)radio_freq / 1000000.0 );
+            }
 
             rtlsdr_read_async( rtlsdr, rtlsdr_on_samples_received, NULL, 0, 0 );
             break;
@@ -105,10 +111,14 @@ start_reception:
             }
 
             printf( "[INFO] Opening AirspyHF\n" );
-            if( radio_freq <= 30000000 )
+            if( radio_freq <= 30000000 ) {
+                butterworth_iir_coefficients( 5000.0, (double)AIRSPYHF_SAMPLE_RATE, a, b );
                 printf( "[INFO] Receiving on %d MHz\n", radio_freq / 1000 );
-            else
+            }
+            else {
+                butterworth_iir_coefficients( 16000.0, (double)AIRSPYHF_SAMPLE_RATE, a, b );
                 printf( "[INFO] Receiving on %.3f MHz\n", (double)radio_freq / 1000000.0 );
+            }
 
             airspyhf_start( airspyhf, airspyhf_on_samples_received, NULL );
 

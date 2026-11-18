@@ -14,14 +14,14 @@ int downsampling_factor = 5;
 // BUFFERS
 
 double
-    rtlsdr_recv_i_buf[NUM_INPUT_BUFFERS][INPUT_BUFFER_SIZE],
-    rtlsdr_recv_q_buf[NUM_INPUT_BUFFERS][INPUT_BUFFER_SIZE];
+    rtlsdr_recv_i_buf[NUM_INPUT_BUFFERS][RTLSDR_INPUT_BUFFER_SIZE],
+    rtlsdr_recv_q_buf[NUM_INPUT_BUFFERS][RTLSDR_INPUT_BUFFER_SIZE];
 
 double
     airspyhf_recv_i_buf[NUM_INPUT_BUFFERS][AIRSPYHF_INPUT_BUFFER_SIZE],
     airspyhf_recv_q_buf[NUM_INPUT_BUFFERS][AIRSPYHF_INPUT_BUFFER_SIZE];
 
-double dsp_buffer[INPUT_BUFFER_SIZE];
+double dsp_buffer[RTLSDR_INPUT_BUFFER_SIZE];
 
 uint32_t recv_buf_idx  = 0;
 

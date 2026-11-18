@@ -16,10 +16,10 @@ void fm_demod( double* i_buf, double* q_buf, double* demod_buf, int buf_size ) {
         prev_phase = current_phase;
 
         if( phase_diff > M_PI ) {
-            phase_diff -= TWOPI;
+            phase_diff -= TWO_PI;
         }
         else if ( phase_diff < -M_PI ) {
-            phase_diff += TWOPI;
+            phase_diff += TWO_PI;
         }
 
         phase_diff /= M_PI;

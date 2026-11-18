@@ -1,3 +1,5 @@
 build/*
 sdr_radio
 *.wav
+*.dfc
+*.py

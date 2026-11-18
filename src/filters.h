@@ -1,32 +1,38 @@
 #ifndef FILTERS_H
 #define FILTERS_H
 
-/*
-Perform low pass filtering on samples with a cutoff frequency
-of 17 kHz (for FM radio)
-The filter is implemented as a second degree IIR Butterworth filter
-and assumes a sampling frequency of 240 kHz.
 
-Args:
- - buf      : Pointer to the buffer with the samples to filter
-              The filter output is written into this buffer as well
- - buf_size : Size of the buffer buf
-*/
-void lpf_17kHz( double* buf, double* dest_buf, int buf_size );
+// Arrays for the IIR coefficients
+extern double a[3], b[3];
+
+
+/*------------------------------------------------------------------------*/
 
 
 /*
-Perform low pass filtering on samples with a cutoff frequency
-of 5 kHz (for AM radio)
-The filter is implemented as a second degree IIR Butterworth filter
-and assumes a sampling frequency of 240 kHz.
+Calculate the coefficients of a low pass filter implemented as a
+2nd degree Butterworth IIR filter
 
 Args:
- - buf      : Pointer to the buffer with the samples to filter
-              The filter output is written into this buffer as well
- - buf_size : Size of the buffer buf
+ - fc   : Cutoff frequency in Hz
+ - fs   : Sampling frequency in Hz
+ - a    : Array of the denominator coefficients (size 3)
+ - b    : Array of the numerator coefficients (size 3)
 */
-void lpf_5kHz( double* buf, int buf_size );
+void butterworth_iir_coefficients( double fc, double fs, double* a, double* b );
 
+
+/*
+Send samples through the IIR filter
+
+Args:
+ - src_buf  : Array of the samples to be filtered
+ - dest_buf : Array of the output samples
+ - buf_size : Size of the source and destination buffer
+ - a        : Array of the denominator coefficients (size 3)
+ - b        : Array of the numerator coefficients (size 3)
+*/
+void filter_forward(
+    double* src_buf, double* dest_buf, int buf_size, double* a, double* b );
 
 #endif

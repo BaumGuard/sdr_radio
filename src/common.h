@@ -1,6 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <math.h>
 #include <stdint.h>
 #include <rtl-sdr.h>
 #include <libairspyhf/airspyhf.h>
@@ -11,11 +12,12 @@
 #define true 1
 #define false 0
 
-#define SQRT_2  1.414213562
+#define SQRT_2  sqrt(2.0)
+#define TWO_PI (2.0 * M_PI)
 #define STR_EQUAL( str1, str2 )     strcmp( str1, str2 ) == 0
 
 // CONSTANTS
-#define TWOPI 6.283185307
+
 
 
 
@@ -32,7 +34,7 @@
 
 // PROGRAM SETTINGS
 #define NUM_INPUT_BUFFERS 8
-#define INPUT_BUFFER_SIZE 131072
+#define RTLSDR_INPUT_BUFFER_SIZE 131072
 #define AIRSPYHF_INPUT_BUFFER_SIZE 2048
 #define AUDIO_BUFFER_SIZE 1024
 
@@ -63,14 +65,14 @@ enum SDRs {
 
 // BUFFERS
 extern double
-    rtlsdr_recv_i_buf[NUM_INPUT_BUFFERS][INPUT_BUFFER_SIZE],
-    rtlsdr_recv_q_buf[NUM_INPUT_BUFFERS][INPUT_BUFFER_SIZE];
+    rtlsdr_recv_i_buf[NUM_INPUT_BUFFERS][RTLSDR_INPUT_BUFFER_SIZE],
+    rtlsdr_recv_q_buf[NUM_INPUT_BUFFERS][RTLSDR_INPUT_BUFFER_SIZE];
 
 extern double
     airspyhf_recv_i_buf[NUM_INPUT_BUFFERS][AIRSPYHF_INPUT_BUFFER_SIZE],
     airspyhf_recv_q_buf[NUM_INPUT_BUFFERS][AIRSPYHF_INPUT_BUFFER_SIZE];
 
-extern double dsp_buffer[INPUT_BUFFER_SIZE];
+extern double dsp_buffer[RTLSDR_INPUT_BUFFER_SIZE];
 
 extern uint32_t recv_buf_idx;
 
@@ -83,8 +85,6 @@ extern airspyhf_device_t* airspyhf;
 extern snd_pcm_t* playback_handle;
 extern wav_file_t* wavfile;
 extern FILE* audio_file;
-
-
 
 
 extern wav_file_t* filter_wav_file;
