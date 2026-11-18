@@ -45,8 +45,9 @@ void read_iq_file( char* filename, void (*sample_cb)(unsigned char*, uint32_t, v
 
 int main( int argc, char* argv[] ) {
     parse_arguments( argc, argv );
+    radio_freq += upconv_corr;
 
-    if( radio_freq <= 30000000 ) {
+    if( radio_freq <= 30000000 || upconv_corr > 0 ) {
         modulation = AM;
     }
 
@@ -90,9 +91,9 @@ start_reception:
             }
 
             printf( "[INFO] Opening RTL-SDR\n" );
-            if( radio_freq <= 30000000 ) {
+            if( radio_freq-upconv_corr <= 30000000 ) {
                 butterworth_iir_coefficients( 5000.0, (double)SDR_SAMPLE_RATE, a, b );
-                printf( "[INFO] Receiving on %d MHz\n", radio_freq / 1000 );
+                printf( "[INFO] Receiving on %d kHz\n", (radio_freq-upconv_corr) / 1000 );
             }
 
             else {
@@ -111,9 +112,9 @@ start_reception:
             }
 
             printf( "[INFO] Opening AirspyHF\n" );
-            if( radio_freq <= 30000000 ) {
+            if( radio_freq-upconv_corr <= 30000000 ) {
                 butterworth_iir_coefficients( 5000.0, (double)AIRSPYHF_SAMPLE_RATE, a, b );
-                printf( "[INFO] Receiving on %d MHz\n", radio_freq / 1000 );
+                printf( "[INFO] Receiving on %d kHz\n", (radio_freq-upconv_corr) / 1000 );
             }
             else {
                 butterworth_iir_coefficients( 16000.0, (double)AIRSPYHF_SAMPLE_RATE, a, b );

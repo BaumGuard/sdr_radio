@@ -1,6 +1,7 @@
 #include "common.h"
 
 uint32_t radio_freq = RADIO_FREQUENCY;
+uint32_t upconv_corr = 0;
 bool record_audio = false;
 char audio_filepath[256];
 int modulation = FM;

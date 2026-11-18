@@ -42,6 +42,7 @@
 
 // SETTINGS
 extern uint32_t radio_freq;
+extern uint32_t upconv_corr;
 extern bool record_audio;
 extern char audio_filepath[256];
 extern int modulation;
